@@ -31,14 +31,18 @@ while(True):
     print "Getting page " + str(page)
     s = requests.get(buildUrl(after),
                      cookies=redditCookie)
-    for l in s.json[u'data'][u'children']:
-        likes.append(l)
-    after = str(s.json[u'data'][u'after'])
-    if(str(after) == 'None'):
-        break
-    #Respecting Reddit's 2 second api rule
-    time.sleep(2)
-    page = page + 1
+    if(str(s.status_code) == "200"):
+        for l in s.json()[u'data'][u'children']:
+            likes.append(l)
+        after = str(s.json()[u'data'][u'after'])
+        if(str(after) == 'None'):
+            break
+        #Respecting Reddit's 2 second api rule
+        time.sleep(2)
+        page = page + 1
+    else:
+        print "Error ", s.status_code
+        exit()
 
 for l in likes:
     sub = str(l[u'data'][u'subreddit'])
